@@ -1,7 +1,7 @@
 import { Contract, ContractInterface, ContractFactory } from '@ethersproject/contracts'
 import { MigrationConfig, MigrationState, MigrationStep } from '../../migrations'
 import linkLibraries from '../../util/linkLibraries'
-
+const Web3 = require('web3')
 type ConstructorArgs = (string | number | string[] | number[])[]
 
 export default function createDeployContractStep({
@@ -39,19 +39,58 @@ export default function createDeployContractStep({
       )
 
       let contract: Contract
+      let contract_address: string
+      let constract_tx_hash: string
       try {
-        contract = await factory.deploy(...constructorArgs, { gasPrice: config.gasPrice })
+
+        const options = { timeout: 1000 * 30 }
+        const web3 = new Web3(new Web3.providers.HttpProvider(config.jsonRpc, options))
+        const account = web3.eth.accounts.privateKeyToAccount(config.privateKey)
+
+
+
+        //  contract.deployTransaction.hash
+
+        contract = await factory.deploy(...constructorArgs, { gasPrice: config.gasPrice, gasLimit: 6721975 })
+        console.log("tx hash is ", contract.deployTransaction.hash);
+        var start = (new Date()).getTime();
+        while ((new Date()).getTime() - start < 10000) {
+          // 使用  continue 实现；
+          continue;
+        }
+        var receipt = await web3.eth.getTransactionReceipt(contract.deployTransaction.hash);
+
+        if (receipt != null) {
+          contract_address = receipt.contractAddress;
+
+        } else {
+          console.log("receipt is null:", contract.deployTransaction.hash);
+          contract_address = contract.address
+        }
+
+        // console.log(contract.deployTransaction.hash);
+        // var receipt = await web3.eth.getTransactionReceipt(contract.deployTransaction.hash);
+        // console.log(receipt);
+        // if (receipt != null) {
+        //   contract_address = receipt.contractAddress;
+        //   constract_tx_hash = contract.deployTransaction.hash;
+        // }else{
+        //   contract_address = "";
+        //   constract_tx_hash = contract.deployTransaction.hash;
+        // }
+
+
       } catch (error) {
         console.error(`Failed to deploy ${contractName}`)
         throw error
       }
 
-      state[key] = contract.address
+      state[key] = contract_address;
 
       return [
         {
           message: `Contract ${contractName} deployed`,
-          address: contract.address,
+          address: contract_address,
           hash: contract.deployTransaction.hash,
         },
       ]

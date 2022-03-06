@@ -36,6 +36,8 @@ describe('deploy-v3-core-factory', () => {
             v2CoreFactoryAddress: DUMMY_ADDRESS,
             weth9Address: DUMMY_ADDRESS,
             nativeCurrencyLabelBytes: asciiStringToBytes32('ETH'),
+            jsonRpc:"",
+            privateKey:""
           }
         )
       )
@@ -53,6 +55,8 @@ describe('deploy-v3-core-factory', () => {
             v2CoreFactoryAddress: DUMMY_ADDRESS,
             weth9Address: DUMMY_ADDRESS,
             nativeCurrencyLabelBytes: asciiStringToBytes32('ETH'),
+            jsonRpc:"",
+            privateKey:"",
           }
         )
       )
@@ -73,6 +77,8 @@ describe('deploy-v3-core-factory', () => {
               v2CoreFactoryAddress: DUMMY_ADDRESS,
               weth9Address: DUMMY_ADDRESS,
               nativeCurrencyLabelBytes: asciiStringToBytes32('ETH'),
+              jsonRpc:"",
+              privateKey:"",
             }
           )
         )

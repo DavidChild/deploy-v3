@@ -44,6 +44,8 @@ export default function deploy({
   nativeCurrencyLabelBytes,
   v2CoreFactoryAddress,
   ownerAddress,
+  jsonRpc,
+  privateKey,
 }: {
   signer: Signer
   gasPrice: number | undefined
@@ -52,6 +54,8 @@ export default function deploy({
   v2CoreFactoryAddress: string
   ownerAddress: string
   initialState: MigrationState
+  jsonRpc:string,
+  privateKey:string
   onStateChange: (newState: MigrationState) => Promise<void>
 }): AsyncGenerator<StepOutput[], void, void> {
   const gasPrice =
@@ -59,7 +63,7 @@ export default function deploy({
 
   return migrate({
     steps: MIGRATION_STEPS,
-    config: { gasPrice, signer, weth9Address, nativeCurrencyLabelBytes, v2CoreFactoryAddress, ownerAddress },
+    config: { gasPrice, signer, weth9Address, nativeCurrencyLabelBytes, v2CoreFactoryAddress, ownerAddress,jsonRpc,privateKey },
     initialState,
     onStateChange,
   })

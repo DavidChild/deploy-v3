@@ -26,6 +26,8 @@ export type MigrationConfig = {
   nativeCurrencyLabelBytes: string
   v2CoreFactoryAddress: string
   ownerAddress: string
+  jsonRpc:string,
+  privateKey:string
 }
 
 export type MigrationStep = GenericMigrationStep<MigrationState, MigrationConfig, StepOutput[]>

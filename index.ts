@@ -8,7 +8,8 @@ import deploy from './src/deploy'
 import { MigrationState } from './src/migrations'
 import { asciiStringToBytes32 } from './src/util/asciiStringToBytes32'
 import { version } from './package.json'
-
+import { syncBuiltinESMExports } from 'module'
+const Web3 = require('web3')
 program
   .requiredOption('-pk, --private-key <string>', 'Private key used to deploy all contracts')
   .requiredOption('-j, --json-rpc <url>', 'JSON RPC URL where the program should be deployed')
@@ -31,8 +32,19 @@ if (!/^0x[a-zA-Z0-9]{64}$/.test(program.privateKey)) {
 }
 
 let url: URL
+let privateKey: string
 try {
   url = new URL(program.jsonRpc)
+  privateKey = program.privateKey;
+} catch (error) {
+  console.error('Invalid JSON privateKey ', (error as Error).message)
+  process.exit(1)
+}
+
+let jsonRpc: string
+try {
+  url = new URL(program.jsonRpc)
+  jsonRpc = program.jsonRpc;
 } catch (error) {
   console.error('Invalid JSON RPC URL', (error as Error).message)
   process.exit(1)
@@ -109,6 +121,13 @@ const onStateChange = async (newState: MigrationState): Promise<void> => {
   fs.writeFileSync(program.state, JSON.stringify(newState))
   finalState = newState
 }
+function sleep() {
+  var start = (new Date()).getTime();
+  while ((new Date()).getTime() - start < 5000) {
+    // 使用  continue 实现；
+    continue;
+  }
+}
 
 async function run() {
   let step = 1
@@ -122,10 +141,24 @@ async function run() {
     weth9Address,
     initialState: state,
     onStateChange,
+    jsonRpc,
+    privateKey
   })
 
+  const options = { timeout: 1000 * 30 }
+  const web3 = new Web3(new Web3.providers.HttpProvider(jsonRpc, options))
   for await (const result of generator) {
+
+
+    // sleep();
+    // var receipt = await web3.eth.getTransactionReceipt(result[0].hash);
+
+    // console.log(result[0].hash);
+    // if (receipt != null) {
+    //   result[0].address = receipt.contractAddress;
+    // }
     console.log(`Step ${step++} complete`, result)
+
     results.push(result)
 
     // wait 15 minutes for any transactions sent in the step

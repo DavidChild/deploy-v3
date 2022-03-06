@@ -8,8 +8,9 @@ export const TRANSFER_V3_CORE_FACTORY_OWNER: MigrationStep = async (state, { sig
   }
 
   const v3CoreFactory = new Contract(state.v3CoreFactoryAddress, UniswapV3Factory.abi, signer)
-
+console.log(1111);
   const owner = await v3CoreFactory.owner()
+  console.log(2222);
   if (owner === ownerAddress)
     return [
       {
